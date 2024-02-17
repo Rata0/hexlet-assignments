@@ -19,8 +19,7 @@ public final class App {
             int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1);
             int per  = ctx.queryParamAsClass("per", Integer.class).getOrDefault(5);
             int fromIndex = (page - 1) * per ;
-            int toIndex = page * per ;
-            List<Map<String, String>> result = USERS.subList(fromIndex, toIndex);
+            List<Map<String, String>> result = USERS.subList(fromIndex, per + fromIndex);
             ctx.json(result);
         });
         // END
