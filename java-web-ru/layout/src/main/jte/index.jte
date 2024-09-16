@@ -3,7 +3,7 @@
 
 @template.layout.page(welcome = @`
     <div class="jumbotron">
-        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+        <p class="lead">This block contains information about users, as well as a list of users.</p>
     </div>
 `,
 users = null,
