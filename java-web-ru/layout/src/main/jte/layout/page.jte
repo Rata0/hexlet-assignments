@@ -2,7 +2,6 @@
 
 @param Content welcome
 @param Content users
-@param Content user
 
 <html>
     <head>
@@ -40,9 +39,6 @@
     </div>
     <div class="users">
       ${users}
-    </div>
-    <div class="user">
-      ${user}
     </div>
   </main>
 
