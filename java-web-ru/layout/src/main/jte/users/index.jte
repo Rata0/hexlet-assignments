@@ -1,4 +1,3 @@
-@import exercise.Data
 @import exercise.dto.users.UsersPage
 @param UsersPage page
 
@@ -9,7 +8,7 @@ users = @`
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">${user.getFirstName()} ${user.getLastName()}</h5>
-                    <a href="/users/${user.getId()}" class="btn btn-primary">View User</a>
+                    <a href="/users/${user.getId()}" class="btn btn-primary">View</a>
                 </div>
             </div>
         </div>

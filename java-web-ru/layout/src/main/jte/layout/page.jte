@@ -2,6 +2,7 @@
 
 @param Content welcome
 @param Content users
+@param Content user
 
 <html>
     <head>
@@ -27,7 +28,7 @@
             <a class="nav-link" href="/">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/users">Features</a>
+            <a class="nav-link" href="/users">Members</a>
           </li>
         </ul>
       </div>
@@ -39,6 +40,9 @@
     </div>
     <div class="users">
       ${users}
+    </div>
+    <div class="user">
+      ${user}
     </div>
   </main>
 

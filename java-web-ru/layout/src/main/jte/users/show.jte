@@ -1,4 +1,3 @@
-@import exercise.Data
 @import exercise.dto.users.UserPage
 @param UserPage page
 
