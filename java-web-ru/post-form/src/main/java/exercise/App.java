@@ -35,17 +35,16 @@ public final class App {
         });
 
         app.post("/users", ctx -> {
-            var firstName = StringUtils.capitalize(ctx.formParam("firstName"));
-            var lastName = StringUtils.capitalize(ctx.formParam("lastName"));
-            var email = ctx.formParam("email").trim().toLowerCase();
-            var password = Security.encrypt(ctx.formParam("password"));
+            String firstName = StringUtils.capitalize(ctx.formParam("firstName"));
+            String lastName = StringUtils.capitalize(ctx.formParam("lastName"));
+            String email = ctx.formParam("email").trim().toLowerCase();
+            String password = Security.encrypt(ctx.formParam("password").trim().toLowerCase());
 
-            var user = new User(firstName, lastName, email, password);
+            User user = new User(firstName, lastName, email, password);
             UserRepository.save(user);
             ctx.redirect("/users");
         });
         // END
-
         return app;
     }
 
