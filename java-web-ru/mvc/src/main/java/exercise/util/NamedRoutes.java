@@ -23,11 +23,11 @@ public class NamedRoutes {
     }
 
     // BEGIN
-    public static String postEdit(Long id) {
-        return postEdit(String.valueOf(id));
+    public static String editPostPath(Long id) {
+        return editPostPath(String.valueOf(id));
     }
 
-    public static String postEdit(String id) {
+    public static String editPostPath(String id) {
         return "/posts/" + id + "/edit";
     }
     // END

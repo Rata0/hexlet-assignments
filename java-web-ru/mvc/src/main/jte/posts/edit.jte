@@ -1,17 +1,11 @@
-@import exercise.dto.posts.BuildPostPage
 @import exercise.dto.posts.EditPostPage
-@import exercise.dto.posts.PostPage
-@import exercise.repository.PostRepository
-@import exercise.util.NamedRoutes
 @param EditPostPage page
 
-
 @template.layout.page(
-content  = @`
-    <div class="container my-5">
+    content = @`
         @if(page.getErrors() != null)
-            <div class="alert alert-danger">
-                <ul class="mb-0">
+            <div class="mb-3">
+                <ul>
                     @for(var validator : page.getErrors().values())
                         @for(var error : validator)
                             <li>${error.getMessage()}</li>
@@ -21,17 +15,20 @@ content  = @`
             </div>
         @endif
 
-        <form action="/posts/${page.getPost().getId()}" method="post" class="card p-4">
-            <div class="form-group">
-                <label for="name">Измени название поста</label>
-                <input type="text" class="form-control" id="name" name="name" value="${page.getPost().getName()}">
-            </div>
-            <div class="form-group">
-                <label for="body">Измени описание поста</label>
-                <textarea class="form-control" id="body" name="body" rows="6" required>${page.getPost().getBody()}</textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Изменить</button>
-        </form>
-    </div>
-`
+        <div class="mx-auto p-4 py-md-5">
+            <form action="/posts/${page.getId()}" method="post">
+                <div class="mb-3">
+                    <label class="form-label">
+                        Название
+                        <input type="text" class="form-control" name="name" value="${page.getName()}" />
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Содержание</label>
+                    <textarea class="form-control" rows="20" cols="70" type="text" name="body">${page.getBody()}</textarea>
+                </div>
+                <input type="submit" class="btn btn-primary" value="Обновить" />
+            </form>
+        </div>
+    `
 )

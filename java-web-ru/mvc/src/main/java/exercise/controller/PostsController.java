@@ -13,9 +13,6 @@ import io.javalin.http.Context;
 import io.javalin.validation.ValidationException;
 import io.javalin.http.NotFoundResponse;
 
-import java.util.Collections;
-import java.util.Optional;
-
 public class PostsController {
 
     public static void build(Context ctx) {
@@ -62,39 +59,41 @@ public class PostsController {
 
     // BEGIN
     public static void edit(Context ctx) {
-        Long id = ctx.pathParamAsClass("id", Long.class).get();
-        Post post = PostRepository.find(id)
-                .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
+        var id = ctx.pathParamAsClass("id", Long.class).get();
+        var post = PostRepository.find(id)
+                .orElseThrow(() -> new NotFoundResponse("Post not found"));
 
-        EditPostPage page = new EditPostPage(post, null);
+        var page = new EditPostPage(id, post.getName(), post.getBody(), null);
         ctx.render("posts/edit.jte", model("page", page));
     }
 
     public static void update(Context ctx) {
-        String id = ctx.pathParam("id");
-        Optional<Post> post = PostRepository.find(Long.parseLong(id));
-        var name = ctx.formParam("name");
-        var body = ctx.formParam("body");
+
+        var id = ctx.pathParamAsClass("id", Long.class).get();
 
         try {
-            ctx.formParamAsClass("name", String.class)
-                    .check(value -> PostRepository.getEntities().stream()
-                                    .noneMatch(p -> p.getName().equals(value)),
-                            "Пост с таким названием уже существует!")
-                    .check(value -> value.length() > 2, "Название поста слишком короткое!")
-                    .get();
-            ctx.formParamAsClass("body", String.class)
-                    .check(value -> value.length() > 10, "Тело поста слишком короткое!")
+            var name = ctx.formParamAsClass("name", String.class)
+                    .check(value -> value.length() >= 2, "Название не должно быть короче двух символов")
                     .get();
 
-            post.get().setName(name);
-            post.get().setBody(body);
-            //PostRepository.save(post);
+            var body = ctx.formParamAsClass("body", String.class)
+                    .check(value -> value.length() >= 10, "Пост должен быть не короче 10 символов")
+                    .get();
+
+            var post = PostRepository.find(id)
+                    .orElseThrow(() -> new NotFoundResponse("Post not found"));
+
+            post.setName(name);
+            post.setBody(body);
+
+            PostRepository.save(post);
             ctx.redirect(NamedRoutes.postsPath());
+
         } catch (ValidationException e) {
-            Post wrongPost = new Post(name, body);
-            var page = new EditPostPage(wrongPost, e.getErrors());
-            ctx.status(422).render("posts/edit.jte", Collections.singletonMap("page", page));
+            var name = ctx.formParam("name");
+            var body = ctx.formParam("body");
+            var page = new EditPostPage(id, name, body, e.getErrors());
+            ctx.render("posts/edit.jte", model("page", page)).status(422);
         }
     }
     // END
