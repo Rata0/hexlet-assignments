@@ -4,8 +4,8 @@
 @template.layout.page(
     content = @`
         @if(page.getErrors() != null)
-            <div class="mb-3">
-                <ul>
+            <div class="alert alert-danger">
+                <ul class="mb-0">
                     @for(var validator : page.getErrors().values())
                         @for(var error : validator)
                             <li>${error.getMessage()}</li>

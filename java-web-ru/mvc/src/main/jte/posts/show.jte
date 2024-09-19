@@ -4,19 +4,14 @@
 
 @template.layout.page(
     content = @`
-        <main>
-            <div class="mx-auto p-4 py-md-5">
-                <h1>${page.getPost().getName()}</h1>
+        <div class="container my-5">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title">${page.getPost().getName()}</h1>
+                    <p class="card-text">${page.getPost().getBody()}</p>
+                    <a href="/posts/${page.getPost().getId()}/edit" class="btn btn-primary">Редактировать пост</a>
+                </div>
             </div>
-
-            <div class="mx-auto p-4 py-md-5">
-                ${page.getPost().getBody()}
-            </div>
-            <!-- BEGIN -->
-            <div class="mx-auto p-4 py-md-5">
-                <a href="/posts/${page.getPost().getId()}/edit">Редактировать пост</a>
-            </div>
-            <!-- END -->
-        </main>
+        </div>
     `
 )

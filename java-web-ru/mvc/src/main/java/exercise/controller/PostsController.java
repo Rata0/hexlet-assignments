@@ -13,6 +13,7 @@ import io.javalin.http.Context;
 import io.javalin.validation.ValidationException;
 import io.javalin.http.NotFoundResponse;
 
+import java.util.Collections;
 import java.util.Optional;
 
 public class PostsController {
@@ -88,11 +89,12 @@ public class PostsController {
 
             post.get().setName(name);
             post.get().setBody(body);
+            //PostRepository.save(post);
             ctx.redirect(NamedRoutes.postsPath());
         } catch (ValidationException e) {
             Post wrongPost = new Post(name, body);
             var page = new EditPostPage(wrongPost, e.getErrors());
-            ctx.status(422).render("posts/edit.jte", model("page", page));
+            ctx.status(422).render("posts/edit.jte", Collections.singletonMap("page", page));
         }
     }
     // END
