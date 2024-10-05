@@ -64,5 +64,80 @@ class ApplicationTest {
 
 
     // BEGIN
+    public Task generation() {
+        return Instancio.of(Task.class)
+                .ignore(Select.field(Task::getId))
+                .supply(Select.field(Task::getTitle), () -> faker.lorem().word())
+                .supply(Select.field(Task::getDescription), () -> faker.lorem().paragraph())
+                .create();
+    }
+
+    @Test
+    public void testShow() throws Exception {
+        Task task = generation();
+        taskRepository.save(task);
+
+        var result = mockMvc.perform(get("/tasks/{id}", task.getId()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertThatJson(result.getResponse().getContentAsString())
+                .and(
+                        v -> v.node("title").isEqualTo(task.getTitle()),
+                        v -> v.node("description").isEqualTo(task.getDescription())
+                );
+    }
+
+    @Test
+    public void testCreate() throws Exception {
+        Task task = generation();
+        taskRepository.save(task);
+
+        var req = post("/tasks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(task));
+
+        mockMvc.perform(req).andExpect(status().isCreated());
+
+        var data = taskRepository.findByTitle(task.getTitle()).get();
+
+        assertThat(data).isNotNull();
+        assertThat(data.getTitle()).isEqualTo(task.getTitle());
+        assertThat(data.getDescription()).isEqualTo(task.getDescription());
+
+    }
+
+    @Test
+    public void testUpdate() throws Exception {
+        Task task = generation();
+        taskRepository.save(task);
+
+        var data = new HashMap<>();
+        data.put("title", "new title");
+
+        var req = put("/tasks/{id}", task.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(data));
+
+        mockMvc.perform(req)
+                .andExpect(status().isOk());
+
+        var taskResponse = taskRepository.findById(task.getId()).get();
+        assertThat(taskResponse.getTitle()).isEqualTo(data.get("title"));
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+        Task task = generation();
+        taskRepository.save(task);
+
+        var req = delete("/tasks/{id}", task.getId());
+
+        mockMvc.perform(req)
+                .andExpect(status().isOk());
+
+        var taskResponse = taskRepository.findById(task.getId()).orElse(null);
+        assertThat(taskResponse).isNull();
+    }
     // END
 }
