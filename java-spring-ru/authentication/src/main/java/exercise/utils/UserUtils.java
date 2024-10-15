@@ -19,8 +19,7 @@ public class UserUtils {
             return null;
         }
         var email = authentication.getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Not Authorised"));
+        return userRepository.findByEmail(email).get();
     }
     // END
 

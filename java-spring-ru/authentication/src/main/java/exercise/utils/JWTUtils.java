@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 // BEGIN
 @Component
 public class JWTUtils {
+
     @Autowired
     private JwtEncoder encoder;
 
@@ -23,7 +24,7 @@ public class JWTUtils {
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(username)
                 .build();
-        return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 }
 // END
