@@ -1,62 +1,44 @@
 package exercise;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CompletableFuture;
 import java.nio.file.Paths;
 import java.nio.file.Files;
-import java.util.concurrent.TimeUnit;
 
 class App {
 
     // BEGIN
-    public static CompletableFuture<String> unionFiles(String file1, String file2, String file_result) {
+    private static Path getFullPath(String filePath) {
+        return Paths.get(filePath).toAbsolutePath().normalize();
+    }
 
-        CompletableFuture<String> string1 = CompletableFuture.supplyAsync(() -> {
+    private static CompletableFuture<String> getContent(String source) {
+        return CompletableFuture.supplyAsync(() -> {
+            String content;
+
             try {
-                System.out.println("First file read");
-                TimeUnit.SECONDS.sleep(5);
-                return Files.readString(Paths.get(file1).toAbsolutePath().normalize());
-            } catch (IOException | InterruptedException e) {
-                System.out.println("First file not found");
+                content = Files.readString(getFullPath(source));
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            return content;
         });
+    }
 
-        CompletableFuture<String> string2 = CompletableFuture.supplyAsync(() -> {
+    public static CompletableFuture<String> unionFiles(String source1, String source2, String dest) {
+        CompletableFuture<String> content1 = getContent(source1);
+        CompletableFuture<String> content2 = getContent(source2);
+
+        return content1.thenCombine(content2, (cont1, cont2) -> {
+            String text = cont1 + cont2;
             try {
-                System.out.println("Second file read");
-                TimeUnit.SECONDS.sleep(5);
-                return Files.readString(Paths.get(file2).toAbsolutePath().normalize());
-            } catch (IOException | InterruptedException e) {
-                System.out.println("Second file not found");
+                Files.writeString(getFullPath(dest), text, StandardOpenOption.CREATE);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        });
 
-        return string1.thenCombine(string2, (f1, f2) -> {
-            try {
-                if (Files.notExists(Paths.get(file_result).toAbsolutePath().normalize())) {
-                    System.out.println("Result file create");
-                    Files.createFile(Paths.get(file_result).toAbsolutePath().normalize());
-                }
-                BufferedWriter writer = new BufferedWriter(new FileWriter(file_result));
-                writer.write(f1);
-                writer.write(f2);
-                writer.close();
-                System.out.println("Writing to result file completed");
-                TimeUnit.SECONDS.sleep(5);
-            } catch (IOException | InterruptedException e) {
-                System.out.println("Result file not found");
-                throw new RuntimeException(e);
-            }
-            String result = f1 + f2;
-            System.out.println("Sum of files=" + result);
-            return result;
-            // Обработка исключений
-            // Если при работе задач возникли исключения
-            // их можно обработать в методе exceptionally
+            return "Ok!";
         }).exceptionally(ex -> {
             System.out.println("Oops! We have an exception - " + ex.getMessage());
             return null;
@@ -65,8 +47,11 @@ class App {
     // END
 
     public static void main(String[] args) {
-        // BEGIN
-        // END
+        String source1 = "src/main/resources/file1.txt" ;
+        String source2 = "src/main/resources/file2.txt" ;
+        String dest = "src/main/resources/result.txt ";
+
+        App.unionFiles(source1, source2, dest);
     }
 }
 
